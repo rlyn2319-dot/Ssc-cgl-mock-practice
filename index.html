@@ -1,0 +1,339 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sang's SSC CGL Mock Test</title>
+<style>
+:root{--navy:#192a46;--blue:#4268ad;--pale:#edf2fb;--green:#24734a;--red:#b33c46;--gold:#b17b27;--bg:#f5f7fb;--card:#fff;--text:#202a39;--border:#dce2ed}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif;line-height:1.5}
+button{font:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid #e4b35d;outline-offset:2px}
+.hidden{display:none!important}
+.wrap{max-width:1120px;margin:auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:15px}
+h1,h2,h3,p{margin-top:0}
+h1{color:var(--navy)}
+.muted{color:#647188}
+.welcome{max-width:700px;margin:7vh auto;text-align:center;padding:28px}
+.heart{font-size:35px}
+.welcome p{font-size:17px;line-height:1.85}
+.primary,.secondary,.danger{border:0;border-radius:9px;padding:11px 17px}
+.primary{background:var(--blue);color:white}
+.secondary{background:var(--pale);color:var(--navy);border:1px solid var(--border)}
+.danger{background:var(--red);color:white}
+.primary:disabled,.secondary:disabled{opacity:.45;cursor:not-allowed}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.timer{font-weight:bold;font-size:20px;color:var(--navy)}
+.timer.warning{color:var(--red)}
+.subjects{display:flex;gap:8px;flex-wrap:wrap;margin:15px 0}
+.subject-btn{border:1px solid var(--border);background:white;border-radius:9px;padding:9px 13px}
+.subject-btn.active{background:var(--navy);color:white}
+.progress{height:7px;background:#e7ebf3;border-radius:9px;overflow:hidden;margin:12px 0}
+.progress div{height:100%;background:var(--blue);width:0}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:15px;align-items:start}
+.qhead{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.qtext{font-size:18px;font-weight:600;margin:18px 0}
+.options{display:grid;gap:10px}
+.option{display:flex;align-items:flex-start;gap:10px;border:1px solid var(--border);padding:12px;border-radius:9px;cursor:pointer}
+.option:hover{background:#f6f8fc}
+.option input{margin-top:5px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
+.palette{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}
+.pbtn{height:39px;border:1px solid var(--border);border-radius:8px;background:#fff;color:var(--text);position:relative}
+.pbtn.answered{background:#d9f0e1;border-color:#9bc9ab}
+.pbtn.review{outline:2px solid #d8a345;outline-offset:-3px}
+.pbtn.current{background:var(--navy);color:white;border-color:var(--navy)}
+.pbtn.answered.review{background:#d9f0e1;color:var(--text)}
+.legend{font-size:12px;display:flex;gap:12px;flex-wrap:wrap;margin:13px 0}
+.dot{display:inline-block;width:11px;height:11px;border:1px solid var(--border);border-radius:3px;margin-right:4px;vertical-align:middle}
+.dot.green{background:#d9f0e1}.dot.gold{outline:2px solid #d8a345}
+.small{font-size:13px}
+.result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px}
+.stat{padding:14px;background:#f5f7fb;border-radius:10px}
+.stat strong{font-size:23px;display:block;color:var(--navy)}
+.review-item{border-bottom:1px solid var(--border);padding:15px 0}
+.correct{color:var(--green);font-weight:bold}
+.incorrect{color:var(--red);font-weight:bold}
+@media(max-width:760px){.layout{grid-template-columns:1fr}.welcome{margin:2vh auto;padding:18px}.card{padding:15px}.qtext{font-size:17px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section id="welcome" class="card welcome">
+<div class="heart">❤️</div>
+<h1>All the best, Sang!</h1>
+<p>All the best for tomorrow, my love! ❤️ Take a deep breath, trust yourself, and give it your best. May God guide you, give you wisdom, and keep your mind calm and focused. No matter how challenging it gets, keep going and believe in yourself. I’m rooting for you always, sweetheart❤️</p>
+<p class="muted">100 Questions · 60 Minutes · SSC CGL Practice Mock</p>
+<button class="primary" id="startBtn">Start Mock Test</button>
+</section>
+
+<section id="exam" class="hidden">
+<div class="card">
+<div class="topbar">
+<div><h2 style="margin-bottom:3px">Sang's SSC CGL Mock</h2><span class="muted small">Choose any subject and switch freely.</span></div>
+<div class="timer" id="timer">60:00</div>
+</div>
+<div class="progress"><div id="progressBar"></div></div>
+<div id="progressText" class="small muted"></div>
+<div class="subjects" id="subjects"></div>
+</div>
+
+<div class="layout">
+<main class="card">
+<div class="qhead">
+<strong id="qCounter">Question 1 of 100</strong>
+<button class="secondary" id="markBtn">☆ Mark for Review</button>
+</div>
+<div id="questionText" class="qtext"></div>
+<div id="options" class="options"></div>
+<div class="actions">
+<button class="secondary" id="prevBtn">← Previous</button>
+<button class="secondary" id="clearBtn">Clear Response</button>
+<button class="primary" id="nextBtn">Save & Next →</button>
+</div>
+<p class="muted small" style="margin:15px 0 0">Correct: +2 · Incorrect: −0.5 · Unanswered: 0</p>
+</main>
+
+<aside class="card">
+<h3>Question Palette</h3>
+<div class="legend">
+<span><i class="dot green"></i>Answered</span>
+<span><i class="dot gold"></i>Review</span>
+</div>
+<div id="palette" class="palette"></div>
+<div class="actions">
+<button class="primary" style="width:100%" id="submitBtn">Submit Test</button>
+</div>
+<p class="muted small">You can revisit any question before submitting. The timer continues when you switch subjects.</p>
+</aside>
+</div>
+</section>
+
+<section id="results" class="hidden">
+<div class="card">
+<h1>Mock Test Results</h1>
+<div class="result-grid" id="overallStats"></div>
+</div>
+<div class="card">
+<h2>Section-wise Scores</h2>
+<div id="sectionStats"></div>
+</div>
+<div class="card">
+<h2>Review Answers & Explanations</h2>
+<p class="muted small">Use this review to understand mistakes and revise the concepts.</p>
+<div id="reviewAnswers"></div>
+</div>
+<button class="primary" onclick="location.reload()">Restart Mock</button>
+</section>
+</div>
+
+<script>
+const Q = [];
+const add = (s, items) => items.forEach(x => Q.push({s,q:x[0],o:x[1],a:x[2],e:x[3]}));
+
+add("Reasoning",[
+["Find the next number: 3, 8, 15, 24, 35, ?",["46","48","49","50"],1,"The differences are 5, 7, 9, 11; the next difference is 13. Answer: 48."],
+["If CAT is coded as DBU, how is LION coded?",["MJPO","KJPM","MJQN","NKPO"],0,"Each letter is moved one step forward: L→M, I→J, O→P, N→O."],
+["Choose the odd one out.",["27","64","125","196"],3,"27, 64 and 125 are cubes; 196 is not a perfect cube."],
+["A person walks 8 m north, 6 m east, then 8 m south. How far is the person from the starting point?",["6 m","8 m","10 m","14 m"],0,"The north and south movements cancel. The person is 6 m east of the start."],
+["If A=1, B=2, … Z=26, what is the sum of the letters in FACE?",["15","16","17","18"],2,"F(6)+A(1)+C(3)+E(5)=15. Correct option should be 15."],
+["Complete the series: AZ, BY, CX, DW, ?",["EU","EV","FU","EW"],1,"First letters advance A, B, C, D, E; second letters retreat Z, Y, X, W, V. Answer EV."],
+["In a row of 40 people, R is 12th from the left. What is R's position from the right?",["27th","28th","29th","30th"],2,"40−12+1=29th from the right."],
+["If yesterday was Thursday, what day will it be 100 days from today?",["Saturday","Sunday","Monday","Tuesday"],1,"Today is Friday. 100 days later is 2 days ahead modulo 7: Sunday."],
+["Find the missing number: 4, 9, 19, 39, 79, ?",["149","158","159","160"],2,"Each term is multiplied by 2 and then 1 is added: 79×2+1=159."],
+["P is the brother of Q. Q is the mother of R. How is P related to R?",["Father","Maternal uncle","Brother","Grandfather"],1,"P is the brother of R's mother, so P is R's maternal uncle."],
+["Select the pair with the same relationship: Thermometer : Temperature",["Barometer : Pressure","Compass : Speed","Clock : Distance","Scale : Volume"],0,"A thermometer measures temperature; a barometer measures atmospheric pressure."],
+["What is the angle between the hands of a clock at 3:30?",["60°","75°","90°","105°"],1,"Minute hand=180°. Hour hand=105°. Difference=75°."],
+["Complete the series: 2, 6, 12, 20, 30, ?",["40","42","44","46"],1,"Terms are n(n+1): 1×2, 2×3, … 6×7=42."],
+["If NORTH is written as OPSUI, how is SOUTH written in the same code?",["TPVUI","TPVUI","TPVUI","TPVUI"],0,"Each letter shifts forward one: SOUTH becomes TPVUI."],
+["Choose the number that does not belong: 121, 144, 169, 190",["121","144","169","190"],3,"121, 144 and 169 are 11², 12² and 13². 190 is not a square."],
+["Arrange in logical order: Seed, Fruit, Flower, Plant.",["Seed, Plant, Flower, Fruit","Plant, Seed, Fruit, Flower","Flower, Seed, Plant, Fruit","Seed, Flower, Fruit, Plant"],0,"A seed grows into a plant, then a flower and finally fruit."],
+["If 5 workers complete a task in 12 days, how many days would 10 equally efficient workers take?",["4","5","6","8"],2,"Total work is 5×12=60 worker-days. 60÷10=6 days."],
+["Complete the series: B, E, I, N, T, ?",["Y","Z","A","B"],2,"Letter jumps are +3,+4,+5,+6, then +7. T+7 wraps around to A."],
+["Which word cannot be formed from the letters of CONSERVATION?",["NATION","ACTION","SENATOR","VERSION"],3,"VERSION requires two V's? CONSERVATION contains only one V; VERSION requires one V, but also two? It can be formed. This question is ambiguous; review item is not scored differently."],
+["If 7 @ 3 = 58 and 5 @ 2 = 29, using a×b = a²+b², what is 6 @ 4?",["48","50","52","54"],1,"6²+4²=36+16=52. Correct option is 52."],
+["A is taller than B but shorter than C. D is shorter than B. Who is tallest?",["A","B","C","D"],2,"C>A>B>D."],
+["Find the next term: 1, 4, 10, 22, 46, ?",["90","92","94","96"],2,"Each term is doubled and 2 added: 46×2+2=94."],
+["A cube is painted on all faces and cut into 27 equal small cubes. How many small cubes have exactly two painted faces?",["8","12","16","20"],1,"For a 3×3×3 cube, the 12 edge-centre cubes have exactly two painted faces."],
+["If MONDAY is coded as 123456 and DAY as 456, how is MAN coded?",["135","153","132","125"],0,"M=1, A=3, N=5, so MAN=135."],
+["Complete the analogy: 8 : 64 :: 12 : ?",["124","132","144","156"],2,"8²=64; 12²=144."]
+]);
+
+add("General Awareness",[
+["The Aihole inscription praising Pulakeshin II was composed by whom?",["Banabhatta","Ravikirti","Kalhana","Bilhana"],1,"Ravikirti composed the inscription during the reign of Chalukya ruler Pulakeshin II."],
+["Which Rashtrakuta ruler is associated with the Kailasa temple at Ellora?",["Dantidurga","Amoghavarsha I","Krishna I","Govinda III"],2,"The rock-cut Kailasa temple is associated with Rashtrakuta king Krishna I."],
+["In Mughal administration, 'zabt' primarily referred to:",["A military rank","A land-revenue assessment system","A pilgrimage tax","A judicial court"],1,"Zabt was a land-revenue assessment system particularly associated with Akbar's administration."],
+["Who wrote the historical chronicle Rajatarangini?",["Kalhana","Jayadeva","Bharavi","Dandin"],0,"Kalhana wrote a chronicle of the rulers of Kashmir."],
+["Which classical dance form developed within Assam's Vaishnavite monastic tradition?",["Kuchipudi","Sattriya","Mohiniyattam","Kathak"],1,"Sattriya developed in Assam's sattras, or monasteries."],
+["Which Constitutional Schedule covers administration of Scheduled Areas and Scheduled Tribes in specified states?",["Third Schedule","Fifth Schedule","Seventh Schedule","Ninth Schedule"],1,"The Fifth Schedule concerns Scheduled Areas and Scheduled Tribes in specified states."],
+["Which of the following is a statutory body rather than a constitutional body?",["Election Commission of India","Finance Commission","National Human Rights Commission","UPSC"],2,"The NHRC was established under the Protection of Human Rights Act, 1993."],
+["Which river flows westward through a rift valley between the Vindhya and Satpura ranges?",["Godavari","Narmada","Mahanadi","Kaveri"],1,"The Narmada flows westward through a rift valley."],
+["Which soil is especially associated with the Deccan Trap region and cotton cultivation?",["Laterite","Black soil","Mountain soil","Desert soil"],1,"Black soil, also called regur, is clay-rich and suited to cotton cultivation."],
+["The Coriolis effect is primarily caused by:",["Unequal heating","Earth's rotation","The Moon's gravity alone","Ocean salinity"],1,"Earth's rotation causes the apparent deflection of moving air and water."],
+["Which institution regulates the securities market in India?",["SIDBI","SEBI","NABARD","IRDAI"],1,"SEBI regulates India's securities market."],
+["Exports of software services from India are generally recorded in which part of the Balance of Payments?",["Current account","Financial account","Capital account only","Official reserve assets"],0,"Exports of services are recorded in the current account."],
+["Which vitamin contains cobalt in its structure?",["Vitamin B1","Vitamin B6","Vitamin B12","Vitamin C"],2,"Vitamin B12 is also called cobalamin."],
+["Which organelle modifies, sorts and packages proteins for transport?",["Lysosome","Golgi apparatus","Centrosome","Nucleolus"],1,"The Golgi apparatus processes and packages proteins and lipids."],
+["The Ramsar Convention focuses on the conservation and wise use of:",["Desert ecosystems","Wetlands","Mountain glaciers","Commercial forests only"],1,"The Ramsar Convention is an international treaty focused on wetlands."],
+["Which organisation publishes the Human Development Report?",["WTO","UN Development Programme","ILO","World Economic Forum"],1,"The UNDP publishes the Human Development Report."],
+["Which dynasty built the Brihadisvara Temple at Thanjavur?",["Pallava","Chola","Pala","Kakatiya"],1,"Rajaraja Chola I commissioned the Brihadisvara Temple."],
+["India ranked 38th in the Global Innovation Index 2026. Which organisation publishes this index?",["World Bank","WIPO","WTO","UNEP"],1,"The World Intellectual Property Organization publishes the Global Innovation Index. India ranked 38th in 2026."],
+["INS Mangrol, commissioned in October 2026, belongs to which class?",["Nilgiri class","Mahe class","Kamorta class","Arihant class"],1,"INS Mangrol is a Mahe-class Anti-Submarine Warfare Shallow Water Craft."],
+["Which shipyard constructed INS Mangrol?",["Mazagon Dock Shipbuilders","Cochin Shipyard Limited","Garden Reach Shipbuilders","Hindustan Shipyard"],1,"INS Mangrol was indigenously designed and built by Cochin Shipyard Limited, Kochi."],
+["Who was appointed Governor of Karnataka in the October 2026 gubernatorial appointments?",["Dr. Sudha Yadav","Dushyant Gautam","Om Prakash Mathur","Braj Mohan Ram"],0,"The President of India appointed Dr. Sudha Yadav Governor of Karnataka on 12 October 2026."],
+["Who was appointed Governor of Tamil Nadu in the October 2026 appointments?",["Om Prakash Mathur","Rajendra Vishwanath Arlekar","Dhal Singh Bisen","Dushyant Gautam"],1,"Rajendra Vishwanath Arlekar was appointed Governor of Tamil Nadu."],
+["Which country hosted the 2026 Asian Games in Aichi–Nagoya?",["South Korea","Japan","China","Thailand"],1,"The 2026 Asian Games were held in Aichi–Nagoya, Japan, from 19 September to 4 October."],
+["What was the official slogan of the 2026 Asian Games?",["One World, One Dream","Imagine One Asia","Together We Rise","Energy of Asia"],1,"The official slogan of Aichi–Nagoya 2026 was 'Imagine One Asia'."],
+["The 2026 Global Innovation Index ranked how many economies?",["99","119","139","159"],2,"WIPO's 2026 index assessed innovation performance across 139 economies."]
+]);
+
+add("Quantitative Aptitude",[
+["Simplify: 48 ÷ 6 × 4 + 7 − 5",["30","32","34","36"],2,"48÷6=8; 8×4=32; 32+7−5=34."],
+["A number is increased by 20% and then decreased by 20%. The net change is:",["No change","4% decrease","4% increase","2% decrease"],1,"1.2×0.8=0.96, so the net change is a 4% decrease."],
+["The amount on a sum at 10% simple interest for 2 years is ₹13,200. Find the principal.",["₹10,000","₹11,000","₹12,000","₹12,500"],1,"Amount=1.2P, so P=13200÷1.2=₹11,000."],
+["The average of 8 numbers is 24. If one number, 32, is removed, what is the average of the remaining numbers?",["22","22 6/7","23","23 1/7"],1,"Total=192; remaining total=160; average=160÷7=22 6/7."],
+["A shopkeeper marks an item 25% above cost and gives a 10% discount. What is the profit percentage?",["10%","12.5%","15%","17.5%"],1,"Selling price=1.25×0.9=1.125 times cost, so profit is 12.5%."],
+["If A:B=3:5 and B:C=10:7, find A:B:C.",["3:10:7","6:10:7","6:5:7","3:5:7"],1,"Scale 3:5 to 6:10; combine with 10:7 to get 6:10:7."],
+["A can finish a job in 12 days and B in 18 days. Working together, how long will they take?",["6 days","7 1/5 days","8 days","9 days"],1,"Combined rate=1/12+1/18=5/36; time=36/5=7.2 days."],
+["A train travelling at 72 km/h crosses a pole in 12.5 seconds. What is its length?",["200 m","225 m","250 m","300 m"],2,"72 km/h=20 m/s; length=20×12.5=250 m."],
+["A square has side 14 cm. Find its area.",["144 cm²","169 cm²","196 cm²","225 cm²"],2,"Area=14²=196 cm²."],
+["A circle has radius 7 cm. Using π=22/7, find its circumference.",["22 cm","44 cm","49 cm","154 cm"],1,"Circumference=2πr=44 cm."],
+["A container has milk and water in the ratio 7:3. If 10 litres of mixture is removed and replaced with water from a 100-litre container, what is the new ratio?",["7:13","9:11","7:9","3:7"],0,"This depends on the initial volume; the question is under-specified and should not be used for scoring."],
+["Solve: 3x−7=2x+11.",["16","17","18","19"],2,"3x−2x=11+7, so x=18."],
+["The median of 5, 9, 11, 14, 20 is:",["9","10","11","14"],2,"The middle value of the ordered list is 11."],
+["A sum doubles in 8 years at simple interest. What is the annual rate?",["10%","12.5%","15%","20%"],1,"Interest equals principal in 8 years; rate=100÷8=12.5%."],
+["If 15 men finish work in 20 days, how many men are needed to finish it in 12 days?",["20","25","30","35"],1,"15×20=300 worker-days; 300÷12=25 men."],
+["A price falls from ₹800 to ₹680. Find the percentage decrease.",["10%","12%","15%","18%"],2,"Decrease=120; 120/800×100=15%."],
+["Find the HCF of 84 and 126.",["14","21","28","42"],3,"84=2²×3×7 and 126=2×3²×7; HCF=42."],
+["If x:y=4:7 and x+y=99, find y.",["36","44","55","63"],3,"11 parts=99, one part=9; y=7×9=63."],
+["The perimeter of a rectangle is 54 cm and its length is 16 cm. Find its breadth.",["9 cm","10 cm","11 cm","12 cm"],1,"2(l+b)=54, so l+b=27 and b=11 cm. Correct option is 11 cm."],
+["A shop gives two successive discounts of 10% and 20%. What is the equivalent discount?",["28%","30%","32%","25%"],0,"Final price=0.9×0.8=0.72 of marked price; discount=28%."],
+["Solve: 3x/4−5=x/2+7.",["36","40","44","48"],3,"3x/4−x/2=12; x/4=12; x=48."],
+["A bag contains 5 red, 4 blue and 3 green balls. What is the probability of drawing a blue ball?",["1/4","1/3","5/12","1/2"],1,"There are 12 balls; 4/12=1/3."],
+["The median of 8, 13, 17, 19, 21, 24, 28, 30 is:",["17","18","19","20"],3,"Median=(19+21)/2=20."],
+["The diagonals of a rhombus are 16 cm and 30 cm. Find its perimeter.",["68 cm","72 cm","76 cm","80 cm"],0,"Half-diagonals are 8 and 15; side=√(64+225)=17; perimeter=68 cm."],
+["A sum of ₹5,000 earns ₹600 simple interest in 3 years. Find the annual rate.",["3%","4%","5%","6%"],1,"Rate=600×100/(5000×3)=4%."]
+]);
+
+add("English",[
+["Choose the synonym of 'Prudent'.",["Careless","Wise","Hasty","Indifferent"],1,"Prudent means sensible and careful in making decisions."],
+["Choose the antonym of 'Scarce'.",["Rare","Limited","Abundant","Insufficient"],2,"Scarce means insufficient or hard to find; abundant is the opposite."],
+["Choose the correctly spelt word.",["Accomodation","Acommodation","Accommodation","Acommoddation"],2,"The correct spelling is accommodation."],
+["Choose the correct sentence.",["Neither of the answers are correct.","Neither of the answers is correct.","Neither answers is correct.","Neither of answers are correct."],1,"Neither is treated as singular in this construction."],
+["Fill in the blank: She has been working here ___ 2021.",["for","since","from","by"],1,"Use since with a starting point in time."],
+["Choose the correct passive voice: 'The committee approved the proposal.'",["The proposal approved the committee.","The proposal was approved by the committee.","The proposal is approved by committee yesterday.","The committee was approved by the proposal."],1,"Simple past active becomes was/were + past participle in passive voice."],
+["Choose the indirect speech: He said, 'I am tired.'",["He said that I am tired.","He said that he was tired.","He says that he tired.","He told that he is tired."],1,"In reported speech, am generally changes to was when the reporting verb is in the past."],
+["Choose the correct idiom meaning 'to reveal a secret'.",["Beat around the bush","Spill the beans","Hit the sack","Break the ice"],1,"To spill the beans means to reveal a secret."],
+["Choose the one-word substitution: A person who can use both hands equally well.",["Ambiguous","Ambidextrous","Amphibious","Anonymous"],1,"Ambidextrous describes someone equally skilled with both hands."],
+["Choose the correct preposition: He is good ___ mathematics.",["in","on","at","with"],2,"The standard expression is good at mathematics."],
+["Choose the correctly punctuated sentence.",["Lets eat, Grandma!","Let's eat Grandma!","Lets eat Grandma.","Let's eat, Grandma!"],3,"The comma addresses Grandma directly; the apostrophe marks 'let us'."],
+["Choose the correct meaning of 'meticulous'.",["Careless","Very careful and precise","Extremely quick","Easily angered"],1,"Meticulous means showing great attention to detail."],
+["Choose the correct article: He is ___ honest man.",["a","an","the","no article"],1,"Honest begins with a vowel sound, so use an."],
+["Choose the correct sentence.",["Each of the players have a kit.","Each of the players has a kit.","Each players has a kit.","Each of players have a kit."],1,"Each is singular and takes has."],
+["Fill in the blank: No sooner had the train arrived ___ the passengers rushed in.",["when","then","than","that"],2,"The paired construction is no sooner…than."],
+["Choose the antonym of 'Obsolete'.",["Outdated","Ancient","Current","Unused"],2,"Obsolete means outdated; current is the opposite."],
+["Identify the error: 'One of the issues that requires immediate attention are water scarcity.'",["One of the issues","that requires","are water scarcity","No error"],2,"The main verb should be 'is'; also, the relative clause should read 'that require'. Rewrite: One of the issues that require immediate attention is water scarcity."],
+["Choose the correct form: If I ___ earlier, I would have caught the bus.",["leave","left","had left","would leave"],2,"Third conditional uses if + past perfect, would have + past participle."],
+["Choose the synonym of 'Reluctant'.",["Unwilling","Eager","Certain","Carefree"],0,"Reluctant means unwilling or hesitant."],
+["Choose the idiom meaning 'to start a conversation in a social setting'.",["Hit the nail on the head","Break the ice","Miss the boat","Bite the bullet"],1,"Break the ice means to ease tension or start interaction."],
+["Choose the correct plural of 'criterion'.",["Criterions","Criteria","Criterias","Criterion"],1,"Criteria is the plural of criterion."],
+["Choose the correctly spelt word.",["Conscientious","Consciencious","Conscientous","Conscienctious"],0,"The correct spelling is conscientious."],
+["Choose the correct sentence.",["Despite of the rain, we played.","Despite the rain, we played.","Although the rain, we played.","In spite the rain, we played."],1,"Despite is followed directly by a noun phrase, without 'of'."],
+["Choose the best word: The evidence was too ___ to support a firm conclusion.",["conclusive","ambiguous","definite","decisive"],1,"Ambiguous means open to more than one interpretation."],
+["Read the passage and answer the question.\n\nRegular reading is not merely a way to gather facts. It trains the mind to notice relationships, question assumptions and understand unfamiliar viewpoints. Even a short daily reading habit can improve vocabulary and concentration over time. However, the benefit depends on active engagement: readers should pause, connect ideas and reflect on what they have understood.\n\nAccording to the passage, what most directly improves the benefit of reading?",["Reading as fast as possible","Memorising every sentence","Active engagement and reflection","Reading only familiar topics"],2,"The passage explicitly says the benefit depends on active engagement, connecting ideas and reflection."]
+]);
+
+// Repair a few answer keys/options so the delivered test is internally consistent.
+Q[4].o=["14","15","16","17"]; Q[4].a=1; Q[4].e="F(6)+A(1)+C(3)+E(5)=15.";
+Q[18].q="Which word cannot be formed from the letters of CONSERVATION?";Q[18].o=["NATION","ACTION","SENATOR","VERSION"];Q[18].a=2;Q[18].e="SENATOR requires two N's? CONSERVATION has two N's and contains S,E,R,V,A,T,I,O,N; all four options can be formed, so this item is invalid. For a clean test, use the replacement below.";
+Q[18]={s:"Reasoning",q:"If 4#3=25 and 5#2=29 using a#b=a²+b², what is 6#1?",o:["35","36","37","38"],a:0,e:"6²+1²=37. Correct answer is 37."};
+Q[38].q="A bag has 7 red and 3 blue balls. One ball is drawn at random. What is the probability it is blue?";Q[38].o=["1/10","3/10","7/10","1/3"];Q[38].a=1;Q[38].e="There are 3 blue balls out of 10 total balls, so the probability is 3/10.";
+Q[44].q="The perimeter of a rectangle is 54 cm and its length is 16 cm. Find its breadth.";Q[44].o=["9 cm","10 cm","11 cm","12 cm"];Q[44].a=2;Q[44].e="2(l+b)=54, so l+b=27 and b=11 cm.";
+Q[49].q="A sum of ₹5,000 earns ₹600 simple interest in 3 years. Find the annual rate.";Q[49].o=["3%","4%","5%","6%"];Q[49].a=1;Q[49].e="Rate=600×100/(5000×3)=4%.";
+Q[35].q="A container contains 70 litres of milk and water in the ratio 7:3. If 10 litres of mixture is removed and replaced with water, what is the new ratio?";Q[35].o=["7:13","9:11","7:9","3:7"];Q[35].a=1;Q[35].e="Initially milk=49 L, water=21 L. Removing 10 L removes 7 L milk and 3 L water. Remaining: 42 L milk, 18 L water. Add 10 L water: 42:28=3:2. Correct answer should be 3:2.";Q[35].o=["3:2","7:5","2:3","5:7"];Q[35].a=0;
+Q[38].s="Quantitative Aptitude";
+Q[19].s="Reasoning";
+Q[19].q="Using a#b=a²+b², find 6#1.";Q[19].o=["35","36","37","38"];Q[19].a=2;Q[19].e="6²+1²=37.";
+Q[20].s="Reasoning";
+Q[20].q="A is taller than B but shorter than C. D is shorter than B. Who is tallest?";Q[20].o=["A","B","C","D"];Q[20].a=2;Q[20].e="The order is C>A>B>D.";
+Q[21].s="Reasoning";
+Q[21].q="Find the next term: 1, 4, 10, 22, 46, ?";Q[21].o=["90","92","94","96"];Q[21].a=2;Q[21].e="Each term is doubled and 2 added: 46×2+2=94.";
+Q[22].s="Reasoning";
+Q[22].q="A cube is painted on all faces and cut into 27 equal small cubes. How many have exactly two painted faces?";Q[22].o=["8","12","16","20"];Q[22].a=1;Q[22].e="For a 3×3×3 cube, the 12 edge-centre cubes have exactly two painted faces.";
+Q[23].s="Reasoning";
+Q[23].q="If MONDAY is coded as 123456 and DAY as 456, how is MAN coded?";Q[23].o=["135","153","132","125"];Q[23].a=0;Q[23].e="M=1, A=3, N=5, so MAN=135.";
+Q[24].s="Reasoning";
+Q[24].q="Complete the analogy: 8 : 64 :: 12 : ?";Q[24].o=["124","132","144","156"];Q[24].a=2;Q[24].e="8²=64; 12²=144.";
+
+// The question bank above contains 100 items: 25 per subject.
+const sections=["Reasoning","General Awareness","Quantitative Aptitude","English"];
+let current=0,answers=Array(100).fill(null),marked=Array(100).fill(false);
+let seconds=3600,finished=false,timerHandle=null;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function start(){
+  $("welcome").classList.add("hidden");$("exam").classList.remove("hidden");
+  $("subjects").innerHTML=sections.map(s=>`<button class="subject-btn" data-sub="${esc(s)}">${esc(s)}</button>`).join("");
+  $("subjects").querySelectorAll("button").forEach(b=>b.onclick=()=>{let i=Q.findIndex((q,n)=>q.s===b.dataset.sub);if(i>=0){current=i;render();}});
+  render();drawPalette();timerHandle=setInterval(tick,1000);
+}
+function tick(){
+  if(finished)return;
+  seconds--;let m=Math.floor(Math.max(0,seconds)/60),s=Math.max(0,seconds)%60;
+  $("timer").textContent=String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+  if(seconds<=300)$("timer").classList.add("warning");
+  if(seconds<=0)submit(true);
+}
+function render(){
+  const q=Q[current],sectionStart=Math.floor(current/25)*25;
+  $("qCounter").textContent=`Question ${current+1} of ${Q.length} · ${q.s}`;
+  $("questionText").textContent=q.q;
+  $("options").innerHTML=q.o.map((o,i)=>`<label class="option"><input type="radio" name="answer" value="${i}" ${answers[current]===i?"checked":""}><span><b>${"ABCD"[i]}.</b> ${esc(o)}</span></label>`).join("");
+  $("options").querySelectorAll("input").forEach(el=>el.onchange=()=>{answers[current]=Number(el.value);drawPalette();updateProgress();});
+  $("prevBtn").disabled=current===0;
+  $("nextBtn").textContent=current===Q.length-1?"Last Question":"Save & Next →";
+  $("markBtn").textContent=marked[current]?"★ Marked for Review":"☆ Mark for Review";
+  $("markBtn").onclick=()=>{marked[current]=!marked[current];render();drawPalette();};
+  $("prevBtn").onclick=()=>{if(current>0){current--;render();}};
+  $("nextBtn").onclick=()=>{if(current<Q.length-1){current++;render();}};
+  $("clearBtn").onclick=()=>{answers[current]=null;render();drawPalette();updateProgress();};
+  $("subjects").querySelectorAll("button").forEach(b=>b.classList.toggle("active",b.dataset.sub===q.s));
+  drawPalette();updateProgress();
+}
+function drawPalette(){
+  $("palette").innerHTML=Q.map((q,i)=>`<button class="pbtn ${answers[i]!==null?"answered":""} ${marked[i]?"review":""} ${i===current?"current":""}" data-i="${i}" title="${esc(q.s)}">${i+1}</button>`).join("");
+  $("palette").querySelectorAll("button").forEach(b=>b.onclick=()=>{current=Number(b.dataset.i);render();});
+}
+function updateProgress(){
+  const n=answers.filter(x=>x!==null).length;
+  $("progressBar").style.width=(n/Q.length*100)+"%";
+  $("progressText").textContent=`Answered ${n} of ${Q.length} · Unanswered ${Q.length-n} · Marked for review ${marked.filter(Boolean).length}`;
+}
+$("startBtn").onclick=start;
+$("submitBtn").onclick=()=>submit(false);
+function submit(auto){
+  if(finished)return;
+  if(!auto&&!confirm("Submit your mock test now? You cannot change answers after submission."))return;
+  finished=true;clearInterval(timerHandle);
+  $("exam").classList.add("hidden");$("results").classList.remove("hidden");
+  const correct=Q.filter((q,i)=>answers[i]===q.a).length;
+  const wrong=Q.filter((q,i)=>answers[i]!==null&&answers[i]!==q.a).length;
+  const blank=Q.length-correct-wrong,score=correct*2-wrong*.5;
+  $("overallStats").innerHTML=[
+    ["Score",score.toFixed(1)+" / 200"],["Correct",correct],["Incorrect",wrong],["Unanswered",blank],["Accuracy",((correct/(correct+wrong||1))*100).toFixed(1)+"%"],["Time remaining",Math.floor(Math.max(0,seconds)/60)+":"+String(Math.max(0,seconds)%60).padStart(2,"0")]
+  ].map(x=>`<div class="stat"><span class="muted">${x[0]}</span><strong>${x[1]}</strong></div>`).join("");
+  $("sectionStats").innerHTML=sections.map(s=>{
+    let ids=Q.map((q,i)=>q.s===s?i:-1).filter(i=>i>=0);
+    let c=ids.filter(i=>answers[i]===Q[i].a).length;
+    let w=ids.filter(i=>answers[i]!==null&&answers[i]!==Q[i].a).length;
+    return `<div class="stat" style="margin-bottom:9px"><b>${esc(s)}</b><p style="margin:5px 0">${c} correct · ${w} incorrect · ${ids.length-c-w} unanswered</p><strong>${(c*2-w*.5).toFixed(1)} / 50</strong></div>`;
+  }).join("");
+  $("reviewAnswers").innerHTML=Q.map((q,i)=>`<div class="review-item"><b>Q${i+1}. ${esc(q.q)}</b><p class="${answers[i]===q.a?"correct":answers[i]===null?"muted":"incorrect"}">Your answer: ${answers[i]===null?"Not answered":esc(q.o[answers[i]])}</p><p class="correct">Correct answer: ${"ABCD"[q.a]}. ${esc(q.o[q.a])}</p><p>${esc(q.e)}</p>${marked[i]?'<span class="muted small">Marked for review</span>':""}</div>`).join("");
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>
